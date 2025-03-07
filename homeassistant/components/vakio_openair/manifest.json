@@ -1,0 +1,14 @@
+{
+  "domain": "vakio_openair",
+  "name": "Vakio OpenAir",
+  "codeowners": ["@Anti-Sh"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/vakio_openair",
+  "homekit": {},
+  "iot_class": "cloud_polling",
+  "quality_scale": "bronze",
+  "requirements": ["paho-mqtt==2.1.0"],
+  "ssdp": [],
+  "zeroconf": []
+}

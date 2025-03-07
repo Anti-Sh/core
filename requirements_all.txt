@@ -1622,6 +1622,7 @@ ovoenergy==2.0.0
 p1monitor==3.1.0
 
 # homeassistant.components.mqtt
+# homeassistant.components.vakio_openair
 paho-mqtt==2.1.0
 
 # homeassistant.components.panasonic_bluray
