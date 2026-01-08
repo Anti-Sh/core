@@ -7,7 +7,10 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import PERCENTAGE, UnitOfTemperature
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import (
+    AddEntitiesCallback,
+    AddConfigEntryEntitiesCallback,
+)
 
 from .const import CONF_PREFIX, DEFAULT_PREFIX, DOMAIN, HUD_ENDPOINT, TEMP_ENDPOINT
 
@@ -17,9 +20,9 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up OpenAir sensor devices from a config entry."""
+    """Set up Kiv sensor devices from a config entry."""
     config = hass.data[DOMAIN][config_entry.entry_id]
     if len(config) == 0:
         config = config_entry.data
@@ -28,14 +31,14 @@ async def async_setup_entry(
 
     async_add_entities(
         [
-            OpenAirTemperatureSensor(hass, prefix, config_entry.entry_id),
-            OpenAirHumiditySensor(hass, prefix, config_entry.entry_id),
+            KivTemperatureSensor(hass, prefix, config_entry.entry_id),
+            KivHumiditySensor(hass, prefix, config_entry.entry_id),
         ]
     )
 
 
-class OpenAirTemperatureSensor(SensorEntity):
-    """Representation of an OpenAir temperature sensor."""
+class KivTemperatureSensor(SensorEntity):
+    """Representation of a Kiv temperature sensor."""
 
     def __init__(self, hass, prefix, entry_id):
         """Initialize the sensor."""
@@ -44,7 +47,7 @@ class OpenAirTemperatureSensor(SensorEntity):
         self.unique_id = f"{entry_id}_temp_{prefix}"
         self._state = None
         self._sub_temp = None
-        self._attr_name = "OpenAir Temperature"
+        self._attr_name = "Kiv Temperature"
 
     async def async_added_to_hass(self):
         """Subscribe to MQTT events."""
@@ -71,8 +74,8 @@ class OpenAirTemperatureSensor(SensorEntity):
         self.async_write_ha_state()
 
 
-class OpenAirHumiditySensor(SensorEntity):
-    """Representation of an OpenAir humidity sensor."""
+class KivHumiditySensor(SensorEntity):
+    """Representation of an Kiv humidity sensor."""
 
     def __init__(self, hass, prefix, entry_id):
         """Initialize the sensor."""
@@ -81,7 +84,7 @@ class OpenAirHumiditySensor(SensorEntity):
         self.unique_id = f"{entry_id}_hud_{prefix}"
         self._state = None
         self._sub_hud = None
-        self._attr_name = "OpenAir Humidity"
+        self._attr_name = "Kiv Humidity"
 
     async def async_added_to_hass(self):
         """Subscribe to MQTT events."""

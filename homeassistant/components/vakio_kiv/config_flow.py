@@ -13,7 +13,7 @@ class OpenAirConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None) -> config_entries.ConfigFlowResult:
         """Handle the initial step."""
         errors = {}
 
@@ -27,7 +27,7 @@ class OpenAirConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     if entry.data.get(CONF_PREFIX) == prefix:
                         return self.async_abort(reason="already_configured")
 
-                return self.async_create_entry(title="OpenAir", data=user_input)
+                return self.async_create_entry(title="Kiv", data=user_input)
 
         return self.async_show_form(
             step_id="user",
@@ -39,6 +39,6 @@ class OpenAirConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_import(self, import_data):
+    async def async_step_import(self, import_data) -> config_entries.ConfigFlowResult:
         """Import a config entry from configuration.yaml."""
         return await self.async_step_user(import_data)
