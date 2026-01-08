@@ -7,18 +7,12 @@ import pytest
 
 from homeassistant.components.smartthings import OLD_DATA
 from homeassistant.components.smartthings.const import (
-    CONF_INSTALLED_APP_ID,
     CONF_LOCATION_ID,
-    CONF_REFRESH_TOKEN,
+    CONF_SUBSCRIPTION_ID,
     DOMAIN,
 )
 from homeassistant.config_entries import SOURCE_USER, ConfigEntryState
-from homeassistant.const import (
-    CONF_ACCESS_TOKEN,
-    CONF_CLIENT_ID,
-    CONF_CLIENT_SECRET,
-    CONF_TOKEN,
-)
+from homeassistant.const import CONF_TOKEN
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import config_entry_oauth2_flow
@@ -488,14 +482,7 @@ async def test_migration(
     mock_old_config_entry.data[CONF_TOKEN].pop("expires_at")
     assert mock_old_config_entry.data == {
         "auth_implementation": DOMAIN,
-        "old_data": {
-            CONF_ACCESS_TOKEN: "mock-access-token",
-            CONF_REFRESH_TOKEN: "mock-refresh-token",
-            CONF_CLIENT_ID: "CLIENT_ID",
-            CONF_CLIENT_SECRET: "CLIENT_SECRET",
-            CONF_LOCATION_ID: "397678e5-9995-4a39-9d9f-ae6ba310236c",
-            CONF_INSTALLED_APP_ID: "123aa123-2be1-4e40-b257-e4ef59083324",
-        },
+        "old_data": {CONF_LOCATION_ID: "397678e5-9995-4a39-9d9f-ae6ba310236c"},
         CONF_TOKEN: {
             "refresh_token": "new-refresh-token",
             "access_token": "new-access-token",
@@ -508,10 +495,23 @@ async def test_migration(
             "installed_app_id": "123123123-2be1-4e40-b257-e4ef59083324",
         },
         CONF_LOCATION_ID: "397678e5-9995-4a39-9d9f-ae6ba310236c",
+        CONF_SUBSCRIPTION_ID: "f5768ce8-c9e5-4507-9020-912c0c60e0ab",
     }
     assert mock_old_config_entry.unique_id == "397678e5-9995-4a39-9d9f-ae6ba310236c"
     assert mock_old_config_entry.version == 3
-    assert mock_old_config_entry.minor_version == 1
+    assert mock_old_config_entry.minor_version == 3
+    mock_smartthings.get_installed_app.assert_called_once_with(
+        "mock-access-token",
+        "123aa123-2be1-4e40-b257-e4ef59083324",
+    )
+    mock_smartthings.delete_installed_app.assert_called_once_with(
+        "mock-access-token",
+        "123aa123-2be1-4e40-b257-e4ef59083324",
+    )
+    mock_smartthings.delete_smart_app.assert_called_once_with(
+        "mock-access-token",
+        "c6cde2b0-203e-44cf-a510-3b3ed4706996",
+    )
 
 
 @pytest.mark.usefixtures("current_request_with_host", "use_cloud")
@@ -570,21 +570,26 @@ async def test_migration_wrong_location(
     assert result["reason"] == "reauth_location_mismatch"
     assert mock_old_config_entry.state is ConfigEntryState.SETUP_ERROR
     assert mock_old_config_entry.data == {
-        OLD_DATA: {
-            CONF_ACCESS_TOKEN: "mock-access-token",
-            CONF_REFRESH_TOKEN: "mock-refresh-token",
-            CONF_CLIENT_ID: "CLIENT_ID",
-            CONF_CLIENT_SECRET: "CLIENT_SECRET",
-            CONF_LOCATION_ID: "397678e5-9995-4a39-9d9f-ae6ba310236c",
-            CONF_INSTALLED_APP_ID: "123aa123-2be1-4e40-b257-e4ef59083324",
-        }
+        OLD_DATA: {CONF_LOCATION_ID: "397678e5-9995-4a39-9d9f-ae6ba310236c"}
     }
     assert (
         mock_old_config_entry.unique_id
         == "appid123-2be1-4e40-b257-e4ef59083324_397678e5-9995-4a39-9d9f-ae6ba310236c"
     )
     assert mock_old_config_entry.version == 3
-    assert mock_old_config_entry.minor_version == 1
+    assert mock_old_config_entry.minor_version == 3
+    mock_smartthings.get_installed_app.assert_called_once_with(
+        "mock-access-token",
+        "123aa123-2be1-4e40-b257-e4ef59083324",
+    )
+    mock_smartthings.delete_installed_app.assert_called_once_with(
+        "mock-access-token",
+        "123aa123-2be1-4e40-b257-e4ef59083324",
+    )
+    mock_smartthings.delete_smart_app.assert_called_once_with(
+        "mock-access-token",
+        "c6cde2b0-203e-44cf-a510-3b3ed4706996",
+    )
 
 
 @pytest.mark.usefixtures("current_request_with_host")

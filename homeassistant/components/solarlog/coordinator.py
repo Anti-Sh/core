@@ -7,6 +7,7 @@ from datetime import timedelta
 import logging
 from urllib.parse import ParseResult, urlparse
 
+from aiohttp import CookieJar
 from solarlog_cli.solarlog_connector import SolarLogConnector
 from solarlog_cli.solarlog_exceptions import (
     SolarLogAuthenticationError,
@@ -20,7 +21,7 @@ from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import slugify
 
@@ -63,7 +64,9 @@ class SolarLogCoordinator(DataUpdateCoordinator[SolarlogData]):
             self.host,
             tz=hass.config.time_zone,
             password=password,
-            session=async_get_clientsession(hass),
+            session=async_create_clientsession(
+                hass, cookie_jar=CookieJar(quote_cookie=False)
+            ),
         )
 
     async def _async_setup(self) -> None:
@@ -75,7 +78,7 @@ class SolarLogCoordinator(DataUpdateCoordinator[SolarlogData]):
                 await self.solarlog.test_extended_data_available()
         if logged_in or await self.solarlog.test_extended_data_available():
             device_list = await self.solarlog.update_device_list()
-            self.solarlog.set_enabled_devices({key: True for key in device_list})
+            self.solarlog.set_enabled_devices(dict.fromkeys(device_list, True))
 
     async def _async_update_data(self) -> SolarlogData:
         """Update the data from the SolarLog device."""

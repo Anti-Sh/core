@@ -46,10 +46,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: WebDavConfigEntry) -> bo
             translation_key="cannot_connect",
         )
 
+    path = entry.data.get(CONF_BACKUP_PATH, "/")
+
     # Ensure the backup directory exists
-    if not await async_ensure_path_exists(
-        client, entry.data.get(CONF_BACKUP_PATH, "/")
-    ):
+    if not await async_ensure_path_exists(client, path):
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="cannot_access_or_create_backup_path",
