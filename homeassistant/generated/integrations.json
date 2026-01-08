@@ -7805,6 +7805,12 @@
       "config_flow": true,
       "iot_class": "cloud_polling"
     },
+    "vakio_base_smart": {
+      "name": "VAKIO Base Smart",
+      "integration_type": "hub",
+      "config_flow": true,
+      "iot_class": "cloud_polling"
+    },
     "yeelight": {
       "name": "Yeelight",
       "integrations": {

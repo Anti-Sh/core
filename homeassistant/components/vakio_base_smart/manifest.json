@@ -1,0 +1,18 @@
+{
+  "domain": "vakio_base_smart",
+  "name": "Vakio Base Smart",
+  "codeowners": [
+    "@Anti-Sh"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/vakio-ru/vakio_base_smart/#readme",
+  "homekit": {},
+  "issue_tracker": "https://github.com/vakio-ru/vakio_base_smart/issues",
+  "requirements": [
+    "paho-mqtt==2.1.0"
+  ],
+  "ssdp": [],
+  "version": "0.2.6",
+  "zeroconf": []
+}
